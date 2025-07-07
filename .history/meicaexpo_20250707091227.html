@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISASAC - Delete Account</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn-delete {
+            width: 100%;
+            background-color: #dc3545;
+            border: none;
+            color: #fff;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .login-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Your ISASAC Account</h2>
+        <p>Log in here to manage your ALDRICH Apps or delete your account. Enter your email and password to log in to your account to delete.</p>
+        
+        <!-- Login Form -->
+        <form id="deleteAccountForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn btn-delete">Delete Account</button>
+        </form>
+
+        <!-- Login Link -->
+        <div class="login-link">
+            <!-- <p>Need to manage your apps? <a href="aimcs">Log in here</a></p> -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+
+    <!-- Custom Dialog Modal -->
+    <div class="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="userInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userInfoModalLabel">User Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="userInfoText"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Dialog Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete your account?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Modular SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyB2OIy0dGtiD9dvF4pxZnv_Or0Uqi_QsPw",
+  authDomain: "meicaexpo.firebaseapp.com",
+  projectId: "meicaexpo",
+  storageBucket: "meicaexpo.firebasestorage.app",
+  messagingSenderId: "158323470018",
+  appId: "1:158323470018:web:e9aadfa742fbc29c17955b",
+  measurementId: "G-7EB04203J3"
+};
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Variables to store user data
+        let userDocId = null;
+
+        // Handle form submission
+        document.getElementById('deleteAccountForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Get form values
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Validate inputs
+            if (!email || !password) {
+                alert('Please enter your email and password.');
+                return;
+            }
+
+            try {
+                // Query Firestore for the user document
+                const usersRef = collection(db, 'Users');
+                const q = query(usersRef, where('email', '==', email), where('password', '==', password));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    // Assuming there's only one matching document
+                    const userDoc = querySnapshot.docs[0];
+                    const userData = userDoc.data();
+
+                    // Store the document ID for later deletion
+                    userDocId = userDoc.id;
+
+                    // Show user information in a modal
+                    document.getElementById('userInfoText').textContent = `Email: ${userData.email}\nUsername: ${userData.username}`;
+                    $('#userInfoModal').modal('show');
+
+                    // Show confirmation modal after user info modal is closed
+                    $('#userInfoModal').on('hidden.bs.modal', function () {
+                        $('#confirmationModal').modal('show');
+                    });
+                } else {
+                    alert('Invalid email or password. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+
+        // Handle confirmation modal's "Yes" button
+        document.getElementById('confirmDelete').addEventListener('click', async function() {
+            if (userDocId) {
+                try {
+                    // Delete the user document
+                    await deleteDoc(doc(db, 'Users', userDocId));
+                    alert('Your account has been deleted successfully.');
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting your account.');
+                }
+            }
+            $('#confirmationModal').modal('hide');
+        });
+    </script>
+</body>
+</html>
