@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MEICA EXPO - Delete Account</title>
+    <title>A - Delete Account</title>
     <!-- Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -20,7 +20,7 @@
         margin: 100px auto;
         padding: 20px;
         background: #fff;
-        border-radius: 8px; 
+        border-radius: 8px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
       h2 {
@@ -59,7 +59,7 @@
   </head>
   <body>
     <div class="container">
-      <h2>Delete Your MEICA EXPO Account</h2>
+      <h2>Delete Your AICC CASPIAN Account</h2>
       <p>
         Log in here to manage your ALDRICH Apps or delete your account. Enter
         your email and password to log in to your account to delete.
@@ -199,17 +199,18 @@
 
       // Your web app's Firebase configuration
       const firebaseConfig = {
-        apiKey: "AIzaSyB2OIy0dGtiD9dvF4pxZnv_Or0Uqi_QsPw",
-        authDomain: "meicaexpo.firebaseapp.com",
-        projectId: "meicaexpo",
-        storageBucket: "meicaexpo.firebasestorage.app",
-        messagingSenderId: "158323470018",
-        appId: "1:158323470018:web:e9aadfa742fbc29c17955b",
-        measurementId: "G-7EB04203J3",
+        apiKey: "AIzaSyAtc1IzqQhMwHBDQQOOb6WbxBznuEt3oXo",
+        authDomain: "aicccaspian-24b67.firebaseapp.com",
+        projectId: "aicccaspian-24b67",
+        storageBucket: "aicccaspian-24b67.firebasestorage.app",
+        messagingSenderId: "225879980134",
+        appId: "1:225879980134:web:f68e7182d69f7e7aba15a7",
+        measurementId: "G-6B2YMWPKQQ",
       };
+
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
+      const analytics = getAnalytics(app);
 
       // Variables to store user data
       let userDocId = null;
